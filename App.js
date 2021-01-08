@@ -6,12 +6,14 @@ export default function App() {
   initialState = {
     titleMessage: "desreveR | Reversed",
     bodyMessage: [
-      "1. Take turns to be Player (cannot see the phone) and Reverser.\n" +
-        "2. Players have to guess the original unreversed word.\n" +
-        "3. Reversers read aloud the presented word to hint the Player.\n",
+      "1. Take turns to be Player (who cannot see the phone) and the Reverser.\n" +
+        "2. Reversers read aloud the reversed word to hint the Player.\n" +
+        "3. Players have to guess the original unreversed word.\n",
     ],
-    gameMessage: "nigeb",
+    gameMessage: "reversed!",
+    endMessage: "stop!",
     words: [
+      "desreveR | Reversed",
       "etarepooc | cooperate",
       "etaidemretni | intermediate",
       "elor | role",
@@ -117,38 +119,37 @@ export default function App() {
 
   state = initialState;
 
-  // Declare a new state variable, which we'll call "count"
+  // Declare new state variables
   const [count, setCount] = useState(0);
   const [highScore, setHighScore] = useState(0);
-
-  reverseWord = (word) => {
-    let newString = "";
-    for (let i = word.length - 1; i >= 0; i--) {
-      newString += word[i];
-    }
-    return newString;
-  };
+  const [currentScore, setCurrentScore] = useState(0);
 
   retrieveMessage = () => {
     return count === 0 ? state.bodyMessage[0] : null;
   };
 
   updateHighScore = () => {
-    newHighScore = count > highScore ? count : highScore;
+    newHighScore = currentScore > highScore ? currentScore : highScore;
     setHighScore(newHighScore);
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.titleText}>
-        Skillcount: {count}; highScore: {highScore}
+        Skill: {currentScore}; High Score: {highScore}
       </Text>
 
       {<Text style={styles.bodyText}>{retrieveMessage()}</Text>}
 
-      <Text style={styles.titleText}>{state.words[count]}</Text>
+      <Text style={styles.reverseText}>{state.words[count]}</Text>
 
-      <Text style={styles.gameWordText} onPress={() => setCount(count + 1)}>
+      <Text
+        style={styles.gameWordText}
+        onPress={() => {
+          setCount(Math.floor(Math.random() * Math.floor(state.words.length)));
+          setCurrentScore(currentScore + 1);
+        }}
+      >
         {state.gameMessage}
       </Text>
 
@@ -157,9 +158,10 @@ export default function App() {
         onPress={() => {
           updateHighScore();
           setCount(0);
+          setCurrentScore(0);
         }}
       >
-        restart
+        {state.endMessage}
       </Text>
 
       <StatusBar style="auto" />
@@ -178,6 +180,13 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "bold",
     color: "orange",
+    textAlign: "center",
+    justifyContent: "center",
+  },
+  reverseText: {
+    fontSize: 40,
+    fontWeight: "bold",
+    color: "purple",
     textAlign: "center",
     justifyContent: "center",
   },
